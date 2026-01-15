@@ -49,7 +49,7 @@ export default function SimpleTemplatePage() {
             <div className="text-5xl mb-4">🎨</div>
             <h3 className="text-xl font-bold mb-2">Sample 4</h3>
             <p className="text-gray-600 mb-6">Creative invitation design</p>
-            <Link href={"/templates/invitation/sample4/create"}>
+            <Link href={"/templates/invitation/sample4/"}>
               <Button className="w-full bg-purple-500 hover:bg-purple-600">
                 Select Template
               </Button>
