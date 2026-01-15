@@ -7,16 +7,45 @@ import {
   PlayCircle, PauseCircle, Volume2
 } from 'lucide-react';
 
+interface Heart {
+  id: number;
+  emoji: string;
+  x: number;
+  speed: number;
+  size: number;
+}
+
+interface Confetti {
+  id: number;
+  emoji: string;
+  x: number;
+  rotation: number;
+  size: number;
+}
+
+interface Memory {
+  id: number;
+  text: string;
+  emoji: string;
+}
+
+interface Chat {
+  user: string;
+  msg: string;
+  time: string;
+}
+
 export default function MastInvitation() {
-  const [activeTab, setActiveTab] = useState('invite');
-  const [musicPlaying, setMusicPlaying] = useState(false);
-  const [danceMode, setDanceMode] = useState(false);
-  const [confetti, setConfetti] = useState([]);
-  const [memories, setMemories] = useState([]);
-  const [loveLevel, setLoveLevel] = useState(0);
-  const [floatingHearts, setFloatingHearts] = useState([]);
-  const [typingText, setTypingText] = useState('');
-  const [currentMessage, setCurrentMessage] = useState(0);
+  const [activeTab, setActiveTab] = useState<string>('invite');
+  const [musicPlaying, setMusicPlaying] = useState<boolean>(false);
+  const [danceMode, setDanceMode] = useState<boolean>(false);
+  const [confetti, setConfetti] = useState<Confetti[]>([]);
+  const [memories, setMemories] = useState<Memory[]>([]);
+  const [loveLevel, setLoveLevel] = useState<number>(0);
+  const [floatingHearts, setFloatingHearts] = useState<Heart[]>([]);
+  const [typingText, setTypingText] = useState<string>('');
+  const [currentMessage, setCurrentMessage] = useState<number>(0);
+  const [windowHeight, setWindowHeight] = useState<number>(0);
   
   const messages = [
     "Hello Cuties! 👋 Ready for masti?",
@@ -45,13 +74,26 @@ export default function MastInvitation() {
     return () => clearInterval(typingInterval);
   }, [currentMessage]);
 
+  // Initialize window height
+  useEffect(() => {
+    setWindowHeight(window.innerHeight);
+    
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Create floating hearts
   useEffect(() => {
     const interval = setInterval(() => {
       if (floatingHearts.length < 15) {
-        const heart = {
-          id: Date.now(),
-          emoji: ['❤️', '💖', '💕', '💗', '💓'][Math.floor(Math.random() * 5)],
+        const heartEmojis = ['❤️', '💖', '💕', '💗', '💓'];
+        const heart: Heart = {
+          id: Date.now() + Math.random(),
+          emoji: heartEmojis[Math.floor(Math.random() * heartEmojis.length)],
           x: Math.random() * 100,
           speed: 2 + Math.random() * 3,
           size: 20 + Math.random() * 20
@@ -68,11 +110,12 @@ export default function MastInvitation() {
   }, [floatingHearts.length]);
 
   const createConfetti = () => {
-    const newConfetti = [];
+    const confettiEmojis = ['🎊', '✨', '🎉', '🎈', '💫'];
+    const newConfetti: Confetti[] = [];
     for (let i = 0; i < 30; i++) {
       newConfetti.push({
         id: Date.now() + i,
-        emoji: ['🎊', '✨', '🎉', '🎈', '💫'][Math.floor(Math.random() * 5)],
+        emoji: confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)],
         x: Math.random() * 100,
         rotation: Math.random() * 360,
         size: 15 + Math.random() * 15
@@ -97,10 +140,12 @@ export default function MastInvitation() {
       "🤪 Crazy games!"
     ];
     
-    const newMemory = {
+    const memoryEmojis = ['😍', '🎤', '💃', '📸', '🎁', '🍕', '🎶', '🤪'];
+    
+    const newMemory: Memory = {
       id: Date.now(),
       text: memoriesList[Math.floor(Math.random() * memoriesList.length)],
-      emoji: ['😍', '🎤', '💃', '📸', '🎁', '🍕', '🎶', '🤪'][memories.length % 8]
+      emoji: memoryEmojis[memories.length % 8]
     };
     
     setMemories(prev => [newMemory, ...prev].slice(0, 5));
@@ -112,6 +157,20 @@ export default function MastInvitation() {
     { id: 'party', label: '🎉 Party Zone', icon: '🥳' },
     { id: 'rajveer', label: '🌟 Rajveer Sir', icon: '👑' },
     { id: 'chat', label: '💬 Live Chat', icon: '💌' }
+  ];
+
+  const chatMessages: Chat[] = [
+    { user: "Anjali", msg: "Excited for party! 😍", time: "2 min ago" },
+    { user: "Rajveer Sir", msg: "Sabko surprises milega! 🎁", time: "10 min ago" },
+    { user: "Priya", msg: "Dress shopping done! 👗", time: "15 min ago" },
+    { user: "Aman", msg: "DJ kaun hai? 🎧", time: "20 min ago" },
+  ];
+
+  const stats = [
+    { label: "Attending", value: "200+", emoji: "👥" },
+    { label: "Performances", value: "8", emoji: "🎭" },
+    { label: "Hours of Fun", value: "6", emoji: "⏳" },
+    { label: "Surprises", value: "∞", emoji: "🎁" }
   ];
 
   return (
@@ -129,7 +188,7 @@ export default function MastInvitation() {
             }}
             initial={{ y: -50, opacity: 0 }}
             animate={{ 
-              y: window.innerHeight + 100,
+              y: windowHeight + 100,
               opacity: [0, 1, 1, 0],
               rotate: 360
             }}
@@ -152,7 +211,7 @@ export default function MastInvitation() {
             }}
             initial={{ y: -50, rotate: 0 }}
             animate={{ 
-              y: window.innerHeight,
+              y: windowHeight,
               rotate: 720,
               x: [0, 50, -50, 0]
             }}
@@ -545,12 +604,7 @@ export default function MastInvitation() {
 
                 {/* Chat Messages */}
                 <div className="space-y-4 mb-6 max-h-80 overflow-y-auto p-4 bg-white/5 rounded-2xl">
-                  {[
-                    { user: "Anjali", msg: "Excited for party! 😍", time: "2 min ago" },
-                    { user: "Rajveer Sir", msg: "Sabko surprises milega! 🎁", time: "10 min ago" },
-                    { user: "Priya", msg: "Dress shopping done! 👗", time: "15 min ago" },
-                    { user: "Aman", msg: "DJ kaun hai? 🎧", time: "20 min ago" },
-                  ].map((chat, i) => (
+                  {chatMessages.map((chat, i) => (
                     <motion.div 
                       key={i}
                       initial={{ opacity: 0, x: -20 }}
@@ -619,12 +673,7 @@ export default function MastInvitation() {
 
         {/* Bottom Stats */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: "Attending", value: "200+", emoji: "👥" },
-            { label: "Performances", value: "8", emoji: "🎭" },
-            { label: "Hours of Fun", value: "6", emoji: "⏳" },
-            { label: "Surprises", value: "∞", emoji: "🎁" }
-          ].map((stat, i) => (
+          {stats.map((stat, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}

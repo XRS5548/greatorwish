@@ -13,7 +13,7 @@ import {
 // 3D Floating Elements Component
 function FloatingElements() {
   const { mouse } = useThree();
-  const groupRef = useRef();
+  const groupRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
     if (groupRef.current) {
@@ -65,7 +65,7 @@ function FloatingElements() {
 
 // Simple 3D Text without font loading
 function Simple3DText() {
-  const groupRef = useRef();
+  const groupRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
     if (groupRef.current) {
@@ -100,14 +100,53 @@ function Simple3DText() {
   );
 }
 
+interface Effect {
+  id: number;
+  type: string;
+  emoji: string;
+}
+
+interface Particle {
+  id: number;
+  emoji: string;
+  x: number;
+  y: number;
+  size: number;
+}
+
+interface View {
+  id: string;
+  label: string;
+  icon: React.ComponentType<any>;
+}
+
+interface PartyHighlight {
+  icon: string;
+  title: string;
+  desc: string;
+}
+
 export default function UltraModernInvitation() {
-  const [activeView, setActiveView] = useState('hero');
-  const [musicVolume, setMusicVolume] = useState(70);
-  const [effects, setEffects] = useState([]);
-  const [particles, setParticles] = useState([]);
-  const [confettiActive, setConfettiActive] = useState(false);
-  const [hologramText, setHologramText] = useState('');
-  const [countdown, setCountdown] = useState(86400); // 24 hours in seconds
+  const [activeView, setActiveView] = useState<string>('hero');
+  const [musicVolume, setMusicVolume] = useState<number>(70);
+  const [effects, setEffects] = useState<Effect[]>([]);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [confettiActive, setConfettiActive] = useState<boolean>(false);
+  const [hologramText, setHologramText] = useState<string>('');
+  const [countdown, setCountdown] = useState<number>(86400); // 24 hours in seconds
+  const [windowHeight, setWindowHeight] = useState<number>(0);
+  
+  // Initialize window height
+  useEffect(() => {
+    setWindowHeight(window.innerHeight);
+    
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   // Countdown timer
   useEffect(() => {
@@ -118,7 +157,7 @@ export default function UltraModernInvitation() {
     return () => clearInterval(timer);
   }, []);
   
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -126,28 +165,32 @@ export default function UltraModernInvitation() {
     return `${days}d ${hours}h ${minutes}m ${secs}s`;
   };
   
-  const addEffect = (type) => {
-    const newEffect = {
+  const addEffect = (type: string) => {
+    const emojiMap: Record<string, string> = {
+      sparkles: '✨',
+      fire: '🔥',
+      music: '🎵',
+      star: '⭐',
+      heart: '💖'
+    };
+    
+    const newEffect: Effect = {
       id: Date.now(),
       type,
-      emoji: {
-        sparkles: '✨',
-        fire: '🔥',
-        music: '🎵',
-        star: '⭐',
-        heart: '💖'
-      }[type]
+      emoji: emojiMap[type]
     };
+    
     setEffects(prev => [newEffect, ...prev].slice(0, 6));
     
     // Create particles
-    const newParticles = Array.from({ length: 20 }, (_, i) => ({
+    const newParticles: Particle[] = Array.from({ length: 20 }, (_, i) => ({
       id: Date.now() + i,
       emoji: newEffect.emoji,
       x: Math.random() * 100,
       y: Math.random() * 100,
       size: 20 + Math.random() * 30
     }));
+    
     setParticles(prev => [...prev, ...newParticles]);
     
     // Auto remove particles
@@ -156,7 +199,7 @@ export default function UltraModernInvitation() {
     }, 2000);
   };
   
-  const views = [
+  const views: View[] = [
     { id: 'hero', label: '🌌 Hero', icon: Zap },
     { id: 'details', label: '📋 Details', icon: Clock },
     { id: 'interactive', label: '🎮 Interactive', icon: PartyPopper },
@@ -164,7 +207,7 @@ export default function UltraModernInvitation() {
     { id: 'rsvp', label: '✅ RSVP', icon: Users }
   ];
   
-  const partyHighlights = [
+  const partyHighlights: PartyHighlight[] = [
     { icon: '🎤', title: 'Live Performances', desc: 'Singing & Dancing' },
     { icon: '🍕', title: 'Food Court', desc: 'Unlimited Snacks' },
     { icon: '📸', title: 'Photo Booth', desc: '3D Photos' },
@@ -172,6 +215,8 @@ export default function UltraModernInvitation() {
     { icon: '🎮', title: 'Gaming Zone', desc: 'VR & Console Games' },
     { icon: '💃', title: 'Dance Floor', desc: 'With DJ' }
   ];
+  
+  const confettiEmojis = ['🎉', '✨', '🎊', '🎈', '🥳'];
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white font-mono overflow-hidden">
@@ -437,7 +482,7 @@ export default function UltraModernInvitation() {
                         min="0"
                         max="100"
                         value={musicVolume}
-                        onChange={(e) => setMusicVolume(e.target.value)}
+                        onChange={(e) => setMusicVolume(Number(e.target.value))}
                         className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-r [&::-webkit-slider-thumb]:from-cyan-500 [&::-webkit-slider-thumb]:to-purple-600"
                       />
                     </div>
@@ -707,7 +752,7 @@ export default function UltraModernInvitation() {
               }}
               initial={{ y: 0, rotate: 0 }}
               animate={{ 
-                y: window.innerHeight,
+                y: windowHeight,
                 rotate: 720,
                 x: Math.random() * 100 - 50
               }}
@@ -716,7 +761,7 @@ export default function UltraModernInvitation() {
                 ease: "easeOut"
               }}
             >
-              {['🎉', '✨', '🎊', '🎈', '🥳'][Math.floor(Math.random() * 5)]}
+              {confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)]}
             </motion.div>
           ))}
         </div>
