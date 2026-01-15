@@ -45,8 +45,22 @@ export default function SimpleTemplatePage() {
               </Button>
             </Link>
           </div>
+           <div className="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+            <div className="text-5xl mb-4">🎨</div>
+            <h3 className="text-xl font-bold mb-2">Sample 4</h3>
+            <p className="text-gray-600 mb-6">Creative invitation design</p>
+            <Link href={"/templates/invitation/sample4"}>
+              <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                Select Template
+              </Button>
+            </Link>
+          </div>
           
         </div>
+
+
+
+        
         
         <p className="text-center text-gray-500 mt-10">
           Select any template to customize and create your perfect invitation
