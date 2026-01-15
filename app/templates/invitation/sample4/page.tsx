@@ -188,7 +188,7 @@ export default function RomanticInvitation() {
                     transition={{ delay: 0.4 }}
                   >
                     <div className="text-2xl font-bold text-rose-700 mb-2">Ek khoobsurat shaam ke liye intezaar rahega</div>
-                    <div className="text-lg text-rose-600">Aapki maujooda shaam ko special banayegi</div>
+                    <div className="text-lg text-rose-600">Aapki Mojudgi shaam ko special banayegi</div>
                   </motion.div>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
